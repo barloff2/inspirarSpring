@@ -1,6 +1,8 @@
 package co.com.inspirar.dao;
 
 import co.com.inspirar.models.Usuario;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -28,5 +30,18 @@ public class UsuarioDaoImp implements UsuarioDao{
     @Override
     public void regUser(Usuario usuario) {
         entityManager.merge(usuario);
+    }
+
+    @Override
+    public Usuario getUserDataCred(Usuario usuario) {
+        String query = "FROM Usuario WHERE email = :email";
+        List<Usuario> list = entityManager.createQuery(query)
+                .setParameter("email", usuario.getEmail())
+                .getResultList();
+        if(list.isEmpty()) {
+            return null;
+        }
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        return (argon2.verify(list.get(0).getPassword(), usuario.getPassword())) ? list.get(0) : null;
     }
 }

@@ -26,5 +26,7 @@ async function regUsuer(){
     },
     body: JSON.stringify(data)
     });
-    const users = await requestUsers.json();
+
+    alert("La cuenta fue creada con exito");
+    window.location.href = 'login.html'
 }

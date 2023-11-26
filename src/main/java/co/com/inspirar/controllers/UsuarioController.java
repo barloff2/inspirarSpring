@@ -2,6 +2,8 @@ package co.com.inspirar.controllers;
 
 import co.com.inspirar.dao.UsuarioDao;
 import co.com.inspirar.models.Usuario;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,8 @@ public class UsuarioController {
 
     @RequestMapping(value = "api/usuarios", method = RequestMethod.POST)
     public void regUsers(@RequestBody Usuario usuario) {
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        usuario.setPassword(argon2.hash(4, 1024, 4, usuario.getPassword()));
         usuarioDao.regUser(usuario);
     }
 
